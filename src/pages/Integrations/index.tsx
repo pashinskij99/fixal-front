@@ -2,17 +2,29 @@ import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import api from "../../api";
-import { 
-    novaPoshtaSchema, 
-    type NovaPoshtaFormValues, 
-    prroSchema, 
-    type PrroFormValues 
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/shared/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/shared/ui/select";
+import api from "../../shared/api/api";
+import {
+  novaPoshtaSchema,
+  type NovaPoshtaFormValues,
+  prroSchema,
+  type PrroFormValues,
 } from "./integrations.schema";
 
 interface Business {
@@ -68,7 +80,10 @@ export default function IntegrationsPage() {
             <CardDescription>Connect your Nova Poshta account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form onSubmit={novaPoshtaForm.handleSubmit(onNovaPoshtaSubmit)} className="space-y-4">
+            <form
+              onSubmit={novaPoshtaForm.handleSubmit(onNovaPoshtaSubmit)}
+              className="space-y-4"
+            >
               <div className="grid gap-2">
                 <Label>Select Business</Label>
                 <Controller
@@ -90,18 +105,30 @@ export default function IntegrationsPage() {
                   )}
                 />
                 {novaPoshtaForm.formState.errors.businessId && (
-                    <p className="text-sm text-destructive">{novaPoshtaForm.formState.errors.businessId.message}</p>
+                  <p className="text-sm text-destructive">
+                    {novaPoshtaForm.formState.errors.businessId.message}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
                 <Label>API Key</Label>
-                <Input {...novaPoshtaForm.register("apiKey")} placeholder="Enter API key" />
+                <Input
+                  {...novaPoshtaForm.register("apiKey")}
+                  placeholder="Enter API key"
+                />
                 {novaPoshtaForm.formState.errors.apiKey && (
-                    <p className="text-sm text-destructive">{novaPoshtaForm.formState.errors.apiKey.message}</p>
+                  <p className="text-sm text-destructive">
+                    {novaPoshtaForm.formState.errors.apiKey.message}
+                  </p>
                 )}
               </div>
-              <Button type="submit" disabled={connectNovaPoshtaMutation.isPending}>
-                {connectNovaPoshtaMutation.isPending ? "Connecting..." : "Connect"}
+              <Button
+                type="submit"
+                disabled={connectNovaPoshtaMutation.isPending}
+              >
+                {connectNovaPoshtaMutation.isPending
+                  ? "Connecting..."
+                  : "Connect"}
               </Button>
             </form>
           </CardContent>
@@ -113,7 +140,10 @@ export default function IntegrationsPage() {
             <CardDescription>Connect your PRRO account</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form onSubmit={prroForm.handleSubmit(onPrroSubmit)} className="space-y-4">
+            <form
+              onSubmit={prroForm.handleSubmit(onPrroSubmit)}
+              className="space-y-4"
+            >
               <div className="grid gap-2">
                 <Label>Select Business</Label>
                 <Controller
@@ -135,14 +165,22 @@ export default function IntegrationsPage() {
                   )}
                 />
                 {prroForm.formState.errors.businessId && (
-                    <p className="text-sm text-destructive">{prroForm.formState.errors.businessId.message}</p>
+                  <p className="text-sm text-destructive">
+                    {prroForm.formState.errors.businessId.message}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
                 <Label>Token/Password</Label>
-                <Input type="password" {...prroForm.register("token")} placeholder="Enter token or password" />
+                <Input
+                  type="password"
+                  {...prroForm.register("token")}
+                  placeholder="Enter token or password"
+                />
                 {prroForm.formState.errors.token && (
-                    <p className="text-sm text-destructive">{prroForm.formState.errors.token.message}</p>
+                  <p className="text-sm text-destructive">
+                    {prroForm.formState.errors.token.message}
+                  </p>
                 )}
               </div>
               <Button type="submit">Connect</Button>

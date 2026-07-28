@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import api from "../../shared/api/api";
-import { signInSchema, type SignInFormValues } from "./signin.schema";
+import { signUpSchema, type SignUpFormValues } from "./signup.schema";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
@@ -16,7 +16,7 @@ interface AlertState {
   message: string;
 }
 
-export default function SignInForm() {
+export default function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState<AlertState | null>(null);
   const navigate = useNavigate();
@@ -25,18 +25,21 @@ export default function SignInForm() {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
+  } = useForm<SignUpFormValues>({
+    resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data: SignInFormValues) => {
+  const onSubmit = async (data: SignUpFormValues) => {
     setAlert(null);
     setIsLoading(true);
 
     try {
-      const response = await api.post("/users/login", data);
-      localStorage.setItem("token", response.data.access_token);
-      navigate("/");
+      await api.post("/users/register", data);
+      setAlert({
+        type: "success",
+        message: "Successfully registered! Redirecting to sign in...",
+      });
+      setTimeout(() => navigate("/signin"), 1500);
     } catch (err) {
       const errorMessage = "Something went wrong";
       if (axios.isAxiosError(err)) {
@@ -53,9 +56,11 @@ export default function SignInForm() {
   return (
     <FormContainer>
       <div className="mb-7">
-        <h1 className="text-2xl font-semibold text-foreground">Welcome Back</h1>
+        <h1 className="text-2xl font-semibold text-foreground">
+          Create Account
+        </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Please enter your details to sign in.
+          Please enter your details to sign up.
         </p>
       </div>
 
@@ -91,6 +96,25 @@ export default function SignInForm() {
 
         <div className="space-y-2">
           <Label
+            htmlFor="phone"
+            className="text-sm font-medium text-foreground"
+          >
+            Phone
+          </Label>
+          <Input
+            id="phone"
+            placeholder="+1234567890"
+            {...register("phone")}
+            disabled={isLoading}
+            className="w-full rounded-lg border border-border bg-background px-3.5 py-2.75 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10 disabled:opacity-50"
+          />
+          {errors.phone && (
+            <p className="text-sm text-destructive">{errors.phone.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label
             htmlFor="password"
             className="text-sm font-medium text-foreground"
           >
@@ -112,17 +136,17 @@ export default function SignInForm() {
         </div>
 
         <Button className="w-full" type="submit" disabled={isLoading}>
-          {isLoading ? "Processing..." : "Sign In"}
+          {isLoading ? "Processing..." : "Sign Up"}
         </Button>
       </form>
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        Don't have an account?
+        Already have an account?
         <a
-          href="/signup"
+          href="/signin"
           className="ml-1 font-semibold text-primary underline transition-opacity hover:opacity-80"
         >
-          Sign up
+          Sign in
         </a>
       </div>
     </FormContainer>

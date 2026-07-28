@@ -5,17 +5,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { X } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import api from "../../api";
+import api from "../../shared/api/api";
 import {
   type CreateProductFormInput,
   createProductSchema,
   type CreateProductFormValues,
 } from "./products.schema";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Skeleton } from "@/shared/ui/skeleton";
 
 type BackendProduct = {
   id: number;

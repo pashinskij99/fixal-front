@@ -3,18 +3,18 @@ import { Link, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit3, Trash2 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import api from "../../api";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AppPagination } from "@/components/AppPagination";
+import api from "../../shared/api/api";
+import { Input } from "@/shared/ui/input";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { AppPagination } from "@/shared/components/AppPagination";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/shared/ui/dialog";
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/shared/ui/table";
 
 interface Product {
   id: number;

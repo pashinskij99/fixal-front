@@ -1,16 +1,15 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import SignInForm from '../SignIn/SignInForm';
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import SignUpForm from "./SignUpForm";
 
 export default function SignUpPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem('token')) {
-      navigate('/');
+    if (localStorage.getItem("token")) {
+      navigate("/");
     }
   }, [navigate]);
 
-  return <SignInForm isSignUp={true} />;
+  return <SignUpForm />;
 }
-

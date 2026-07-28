@@ -1,27 +1,28 @@
 import { Controller, type Control, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import api from "../../api";
+import api from "../../shared/api/api";
 import {
   type CreateDeliveryFormInput,
   createDeliverySchema,
   type CreateDeliveryFormValues,
 } from "./delivery.schema";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/shared/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+} from "@/shared/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/ui/tabs";
+import { useBusinesses } from "@/entities/business";
 
 const carrierOptions = [
   { value: "nova_poshta", label: "Nova Poshta" },
@@ -50,11 +51,6 @@ const payerTypeOptions = [
   { value: "recipient", label: "Recipient" },
 ];
 
-type Business = {
-  id: number;
-  defaultCarrier?: CreateDeliveryFormValues["carrier"] | null;
-};
-
 export default function CreateDeliveryPage() {
   const { businessId } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
@@ -82,14 +78,7 @@ export default function CreateDeliveryPage() {
 
   const carrier = useWatch({ control, name: "carrier" });
 
-  const { data: businesses } = useQuery<Business[]>({
-    queryKey: ["businesses"],
-    queryFn: async () => {
-      const response = await api.get("/onboarding/setup-business");
-      return response.data;
-    },
-    enabled: !!businessId,
-  });
+  const { data: businesses } = useBusinesses({ enabled: !!businessId });
 
   const currentBusiness = businesses?.find(
     (business) => String(business.id) === businessId,
@@ -146,12 +135,23 @@ export default function CreateDeliveryPage() {
                 label={t("deliveries.createPage.fields.orderNumber")}
                 error={errors.orderNumber?.message}
               >
-                <Input {...register("orderNumber")} placeholder={t("deliveries.createPage.placeholders.orderNumber")} />
+                <Input
+                  {...register("orderNumber")}
+                  placeholder={t(
+                    "deliveries.createPage.placeholders.orderNumber",
+                  )}
+                />
               </Field>
-              <Field label={t("deliveries.createPage.fields.totalAmount")} error={errors.totalAmount?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.totalAmount")}
+                error={errors.totalAmount?.message}
+              >
                 <Input type="number" step="0.01" {...register("totalAmount")} />
               </Field>
-              <Field label={t("deliveries.createPage.fields.currency")} error={errors.currency?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.currency")}
+                error={errors.currency?.message}
+              >
                 <Input {...register("currency")} placeholder="UAH" />
               </Field>
             </div>
@@ -161,13 +161,23 @@ export default function CreateDeliveryPage() {
                 label={t("deliveries.createPage.fields.recipientName")}
                 error={errors.recipientName?.message}
               >
-                <Input {...register("recipientName")} placeholder={t("deliveries.createPage.placeholders.recipientName")} />
+                <Input
+                  {...register("recipientName")}
+                  placeholder={t(
+                    "deliveries.createPage.placeholders.recipientName",
+                  )}
+                />
               </Field>
               <Field
                 label={t("deliveries.createPage.fields.recipientPhone")}
                 error={errors.recipientPhone?.message}
               >
-                <Input {...register("recipientPhone")} placeholder={t("deliveries.createPage.placeholders.recipientPhone")} />
+                <Input
+                  {...register("recipientPhone")}
+                  placeholder={t(
+                    "deliveries.createPage.placeholders.recipientPhone",
+                  )}
+                />
               </Field>
               <Field
                 label={t("deliveries.createPage.fields.recipientEmail")}
@@ -175,7 +185,9 @@ export default function CreateDeliveryPage() {
               >
                 <Input
                   {...register("recipientEmail")}
-                  placeholder={t("deliveries.createPage.placeholders.recipientEmail")}
+                  placeholder={t(
+                    "deliveries.createPage.placeholders.recipientEmail",
+                  )}
                 />
               </Field>
             </div>
@@ -205,13 +217,22 @@ export default function CreateDeliveryPage() {
             </div>
 
             <div className="grid md:grid-cols-4 gap-4">
-              <Field label={t("deliveries.createPage.fields.weight")} error={errors.weight?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.weight")}
+                error={errors.weight?.message}
+              >
                 <Input type="number" step="0.01" {...register("weight")} />
               </Field>
-              <Field label={t("deliveries.createPage.fields.volume")} error={errors.volume?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.volume")}
+                error={errors.volume?.message}
+              >
                 <Input type="number" step="0.0001" {...register("volume")} />
               </Field>
-              <Field label={t("deliveries.createPage.fields.seatsCount")} error={errors.seatsCount?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.seatsCount")}
+                error={errors.seatsCount?.message}
+              >
                 <Input type="number" {...register("seatsCount")} />
               </Field>
               <Field
@@ -227,10 +248,16 @@ export default function CreateDeliveryPage() {
             </div>
 
             <div className="grid md:grid-cols-3 gap-4">
-              <Field label={t("deliveries.createPage.fields.codAmount")} error={errors.codAmount?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.codAmount")}
+                error={errors.codAmount?.message}
+              >
                 <Input type="number" step="0.01" {...register("codAmount")} />
               </Field>
-              <Field label={t("deliveries.createPage.fields.shippingCost")} error={errors.shippingCost?.message}>
+              <Field
+                label={t("deliveries.createPage.fields.shippingCost")}
+                error={errors.shippingCost?.message}
+              >
                 <Input
                   type="number"
                   step="0.01"
@@ -243,14 +270,18 @@ export default function CreateDeliveryPage() {
               >
                 <Input
                   {...register("formattedAddress")}
-                  placeholder={t("deliveries.createPage.placeholders.formattedAddress")}
+                  placeholder={t(
+                    "deliveries.createPage.placeholders.formattedAddress",
+                  )}
                 />
               </Field>
             </div>
 
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">{t("deliveries.createPage.sections.carrierMetadata")}</CardTitle>
+                <CardTitle className="text-base">
+                  {t("deliveries.createPage.sections.carrierMetadata")}
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <Tabs
@@ -265,114 +296,150 @@ export default function CreateDeliveryPage() {
                   <TabsList>
                     {carrierOptions.map((option) => (
                       <TabsTrigger key={option.value} value={option.value}>
-                        {t(`deliveries.createPage.carrierMetadata.${option.value}.tab`)}
+                        {t(
+                          `deliveries.createPage.carrierMetadata.${option.value}.tab`,
+                        )}
                       </TabsTrigger>
                     ))}
                   </TabsList>
 
                   <TabsContent value="nova_poshta">
                     <div className="grid md:grid-cols-3 gap-4">
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.nova_poshta.cityRef")}
-                      error={errors.carrierMetadata?.cityRef?.message}
-                    >
-                      <Input {...register("carrierMetadata.cityRef")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.nova_poshta.warehouseRef")}
-                      error={errors.carrierMetadata?.warehouseRef?.message}
-                    >
-                      <Input {...register("carrierMetadata.warehouseRef")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.nova_poshta.serviceType")}
-                      error={errors.carrierMetadata?.serviceType?.message}
-                    >
-                      <Input
-                        {...register("carrierMetadata.serviceType")}
-                        placeholder={t("deliveries.createPage.placeholders.serviceType")}
-                      />
-                    </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.nova_poshta.cityRef",
+                        )}
+                        error={errors.carrierMetadata?.cityRef?.message}
+                      >
+                        <Input {...register("carrierMetadata.cityRef")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.nova_poshta.warehouseRef",
+                        )}
+                        error={errors.carrierMetadata?.warehouseRef?.message}
+                      >
+                        <Input {...register("carrierMetadata.warehouseRef")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.nova_poshta.serviceType",
+                        )}
+                        error={errors.carrierMetadata?.serviceType?.message}
+                      >
+                        <Input
+                          {...register("carrierMetadata.serviceType")}
+                          placeholder={t(
+                            "deliveries.createPage.placeholders.serviceType",
+                          )}
+                        />
+                      </Field>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="ukrposhta">
                     <div className="grid md:grid-cols-4 gap-4">
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.postcode")}
-                      error={errors.carrierMetadata?.postcode?.message}
-                    >
-                      <Input {...register("carrierMetadata.postcode")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.regionId")}
-                      error={errors.carrierMetadata?.regionId?.message}
-                    >
-                      <Input {...register("carrierMetadata.regionId")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.districtId")}
-                      error={errors.carrierMetadata?.districtId?.message}
-                    >
-                      <Input {...register("carrierMetadata.districtId")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.cityId")}
-                      error={errors.carrierMetadata?.cityId?.message}
-                    >
-                      <Input {...register("carrierMetadata.cityId")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.streetId")}
-                      error={errors.carrierMetadata?.streetId?.message}
-                    >
-                      <Input {...register("carrierMetadata.streetId")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.house")}
-                      error={errors.carrierMetadata?.house?.message}
-                    >
-                      <Input {...register("carrierMetadata.house")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.ukrposhta.apartment")}
-                      error={errors.carrierMetadata?.apartment?.message}
-                    >
-                      <Input {...register("carrierMetadata.apartment")} />
-                    </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.postcode",
+                        )}
+                        error={errors.carrierMetadata?.postcode?.message}
+                      >
+                        <Input {...register("carrierMetadata.postcode")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.regionId",
+                        )}
+                        error={errors.carrierMetadata?.regionId?.message}
+                      >
+                        <Input {...register("carrierMetadata.regionId")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.districtId",
+                        )}
+                        error={errors.carrierMetadata?.districtId?.message}
+                      >
+                        <Input {...register("carrierMetadata.districtId")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.cityId",
+                        )}
+                        error={errors.carrierMetadata?.cityId?.message}
+                      >
+                        <Input {...register("carrierMetadata.cityId")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.streetId",
+                        )}
+                        error={errors.carrierMetadata?.streetId?.message}
+                      >
+                        <Input {...register("carrierMetadata.streetId")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.house",
+                        )}
+                        error={errors.carrierMetadata?.house?.message}
+                      >
+                        <Input {...register("carrierMetadata.house")} />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.ukrposhta.apartment",
+                        )}
+                        error={errors.carrierMetadata?.apartment?.message}
+                      >
+                        <Input {...register("carrierMetadata.apartment")} />
+                      </Field>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="rozetka">
                     <div className="grid md:grid-cols-2 gap-4">
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.rozetka.rozetkaPointId")}
-                      error={errors.carrierMetadata?.rozetkaPointId?.message}
-                    >
-                      <Input {...register("carrierMetadata.rozetkaPointId")} />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.rozetka.cityId")}
-                      error={errors.carrierMetadata?.cityId?.message}
-                    >
-                      <Input {...register("carrierMetadata.cityId")} />
-                    </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.rozetka.rozetkaPointId",
+                        )}
+                        error={errors.carrierMetadata?.rozetkaPointId?.message}
+                      >
+                        <Input
+                          {...register("carrierMetadata.rozetkaPointId")}
+                        />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.rozetka.cityId",
+                        )}
+                        error={errors.carrierMetadata?.cityId?.message}
+                      >
+                        <Input {...register("carrierMetadata.cityId")} />
+                      </Field>
                     </div>
                   </TabsContent>
 
                   <TabsContent value="sat">
                     <div className="grid md:grid-cols-3 gap-4">
                       <Field
-                        label={t("deliveries.createPage.carrierMetadata.sat.cargoType")}
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.sat.cargoType",
+                        )}
                         error={errors.carrierMetadata?.cargoType?.message}
                       >
                         <Input
                           {...register("carrierMetadata.cargoType")}
-                          placeholder={t("deliveries.createPage.placeholders.cargoType")}
+                          placeholder={t(
+                            "deliveries.createPage.placeholders.cargoType",
+                          )}
                         />
                       </Field>
                       <Field
-                        label={t("deliveries.createPage.carrierMetadata.sat.departureWarehouseId")}
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.sat.departureWarehouseId",
+                        )}
                         error={
                           errors.carrierMetadata?.departureWarehouseId?.message
                         }
@@ -382,7 +449,9 @@ export default function CreateDeliveryPage() {
                         />
                       </Field>
                       <Field
-                        label={t("deliveries.createPage.carrierMetadata.sat.arrivalWarehouseId")}
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.sat.arrivalWarehouseId",
+                        )}
                         error={
                           errors.carrierMetadata?.arrivalWarehouseId?.message
                         }
@@ -392,7 +461,9 @@ export default function CreateDeliveryPage() {
                         />
                       </Field>
                       <Field
-                        label={t("deliveries.createPage.carrierMetadata.sat.length")}
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.sat.length",
+                        )}
                         error={errors.carrierMetadata?.length?.message}
                       >
                         <Input
@@ -402,7 +473,9 @@ export default function CreateDeliveryPage() {
                         />
                       </Field>
                       <Field
-                        label={t("deliveries.createPage.carrierMetadata.sat.width")}
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.sat.width",
+                        )}
                         error={errors.carrierMetadata?.width?.message}
                       >
                         <Input
@@ -412,7 +485,9 @@ export default function CreateDeliveryPage() {
                         />
                       </Field>
                       <Field
-                        label={t("deliveries.createPage.carrierMetadata.sat.height")}
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.sat.height",
+                        )}
                         error={errors.carrierMetadata?.height?.message}
                       >
                         <Input
@@ -426,65 +501,79 @@ export default function CreateDeliveryPage() {
 
                   <TabsContent value="delivery_group">
                     <div className="grid md:grid-cols-3 gap-4">
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.delivery_group.cargoType")}
-                      error={errors.carrierMetadata?.cargoType?.message}
-                    >
-                      <Input
-                        {...register("carrierMetadata.cargoType")}
-                        placeholder={t("deliveries.createPage.placeholders.cargoType")}
-                      />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.delivery_group.departureWarehouseId")}
-                      error={
-                        errors.carrierMetadata?.departureWarehouseId?.message
-                      }
-                    >
-                      <Input
-                        {...register("carrierMetadata.departureWarehouseId")}
-                      />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.delivery_group.arrivalWarehouseId")}
-                      error={
-                        errors.carrierMetadata?.arrivalWarehouseId?.message
-                      }
-                    >
-                      <Input
-                        {...register("carrierMetadata.arrivalWarehouseId")}
-                      />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.delivery_group.length")}
-                      error={errors.carrierMetadata?.length?.message}
-                    >
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...register("carrierMetadata.length")}
-                      />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.delivery_group.width")}
-                      error={errors.carrierMetadata?.width?.message}
-                    >
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...register("carrierMetadata.width")}
-                      />
-                    </Field>
-                    <Field
-                      label={t("deliveries.createPage.carrierMetadata.delivery_group.height")}
-                      error={errors.carrierMetadata?.height?.message}
-                    >
-                      <Input
-                        type="number"
-                        step="0.01"
-                        {...register("carrierMetadata.height")}
-                      />
-                    </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.delivery_group.cargoType",
+                        )}
+                        error={errors.carrierMetadata?.cargoType?.message}
+                      >
+                        <Input
+                          {...register("carrierMetadata.cargoType")}
+                          placeholder={t(
+                            "deliveries.createPage.placeholders.cargoType",
+                          )}
+                        />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.delivery_group.departureWarehouseId",
+                        )}
+                        error={
+                          errors.carrierMetadata?.departureWarehouseId?.message
+                        }
+                      >
+                        <Input
+                          {...register("carrierMetadata.departureWarehouseId")}
+                        />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.delivery_group.arrivalWarehouseId",
+                        )}
+                        error={
+                          errors.carrierMetadata?.arrivalWarehouseId?.message
+                        }
+                      >
+                        <Input
+                          {...register("carrierMetadata.arrivalWarehouseId")}
+                        />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.delivery_group.length",
+                        )}
+                        error={errors.carrierMetadata?.length?.message}
+                      >
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...register("carrierMetadata.length")}
+                        />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.delivery_group.width",
+                        )}
+                        error={errors.carrierMetadata?.width?.message}
+                      >
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...register("carrierMetadata.width")}
+                        />
+                      </Field>
+                      <Field
+                        label={t(
+                          "deliveries.createPage.carrierMetadata.delivery_group.height",
+                        )}
+                        error={errors.carrierMetadata?.height?.message}
+                      >
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...register("carrierMetadata.height")}
+                        />
+                      </Field>
                     </div>
                   </TabsContent>
 

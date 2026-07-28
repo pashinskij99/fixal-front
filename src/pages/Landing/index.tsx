@@ -1,11 +1,15 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "../../api";
-import { Button } from "@/components/ui/button";
+import api from "../../shared/api/api";
+import { Button } from "@/shared/ui/button";
+import { useTranslation } from "react-i18next";
+import { Spinner } from "@/shared/ui/spinner";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+
+  const { t } = useTranslation();
 
   const { data: businesses, isLoading } = useQuery({
     queryKey: ["businesses"],
@@ -23,13 +27,13 @@ export default function LandingPage() {
     }
   }, [navigate]);
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Spinner />;
 
   return (
     <div className="flex min-h-screen items-center justify-center p-6">
       <div className="text-center w-full max-w-md">
-        <h1 className="text-3xl font-bold mb-8">Select a business</h1>
-        
+        <h1 className="text-3xl font-bold mb-8">{t("selectBusiness.title")}</h1>
+
         {businesses && businesses.length > 0 ? (
           <div className="grid gap-4">
             {businesses.map((b: any) => (
@@ -44,10 +48,14 @@ export default function LandingPage() {
             ))}
           </div>
         ) : (
-          <div className="p-8 border rounded-lg">
-            <p className="mb-4 text-slate-500">No businesses found.</p>
+          <div className="p-4 border rounded-lg">
+            <p className="mb-3! text-slate-500">
+              {t("selectBusiness.noBusinesses")}
+            </p>
             <Button asChild>
-              <Link to="/onboarding/setup-business">Create your first business</Link>
+              <Link className="inline-block" to="/onboarding/setup-business">
+                {t("selectBusiness.createButton")}
+              </Link>
             </Button>
           </div>
         )}

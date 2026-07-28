@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "@/components/theme-provider";
-import { MainLayout } from "@/components/MainLayout";
+import { ThemeProvider } from "@/shared/components/theme-provider";
+import { MainLayout } from "@/shared/components/MainLayout";
 import LandingPage from "./pages/Landing";
 import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
@@ -13,7 +13,7 @@ import CreateDeliveryPage from "./pages/Deliveries/CreateDeliveryPage";
 import ProductsPage from "./pages/Products";
 import CreateProductPage from "./pages/Products/CreateProductPage";
 import EditProductPage from "./pages/Products/EditProductPage";
-import { DashboardLayout } from "@/components/DashboardLayout";
+import { DashboardLayout } from "@/shared/components/DashboardLayout";
 
 function App() {
   return (

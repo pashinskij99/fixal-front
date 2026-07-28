@@ -1,23 +1,24 @@
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import api from "../../api";
+import api from "../../shared/api/api";
 import {
   createBusinessSchema,
   type CreateBusinessFormValues,
 } from "./create-business.schema";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/shared/ui/button";
+import { Input } from "@/shared/ui/input";
+import { Label } from "@/shared/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+} from "@/shared/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { useNavigate } from "react-router-dom";
+import { Spinner } from "@/shared/ui/spinner";
 
 interface Business {
   id: number;
@@ -157,7 +158,7 @@ export default function SetupBusinessPage() {
         </CardHeader>
         <CardContent>
           {isLoadingBusinesses ? (
-            <p>Loading...</p>
+            <Spinner />
           ) : (
             <ul className="list-disc pl-5">
               {businesses?.map((b) => (

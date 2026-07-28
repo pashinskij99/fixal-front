@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import api from "../../api";
+import api from "../../shared/api/api";
 import {
   Table,
   TableBody,
@@ -10,18 +10,18 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AppPagination } from "@/components/AppPagination";
-import { Input } from "@/components/ui/input";
+} from "@/shared/ui/table";
+import { Button } from "@/shared/ui/button";
+import { Skeleton } from "@/shared/ui/skeleton";
+import { AppPagination } from "@/shared/components/AppPagination";
+import { Input } from "@/shared/ui/input";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/shared/ui/select";
 
 type Delivery = {
   id: string;
@@ -117,7 +117,9 @@ export default function DeliveriesPage() {
             }}
           >
             <SelectTrigger>
-              <SelectValue placeholder={t("deliveries.filters.statusPlaceholder")} />
+              <SelectValue
+                placeholder={t("deliveries.filters.statusPlaceholder")}
+              />
             </SelectTrigger>
             <SelectContent>
               {statusOptions.map((option) => (
@@ -196,7 +198,9 @@ export default function DeliveriesPage() {
                     </div>
                   </TableCell>
                   <TableCell className="text-sm">
-                    {t(`deliveries.createPage.carrierMetadata.${delivery.carrier}.tab`)}
+                    {t(
+                      `deliveries.createPage.carrierMetadata.${delivery.carrier}.tab`,
+                    )}
                   </TableCell>
                   <TableCell className="text-sm">
                     {t(`deliveries.statuses.${delivery.status}`)}

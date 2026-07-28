@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import api from "../../api";
+import api from "../../shared/api/api";
+import { Spinner } from "@/shared/ui/spinner";
 
 interface User {
   username: string;
@@ -23,7 +24,7 @@ export default function DashboardPage() {
     retry: false,
   });
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Spinner />;
   if (error) {
     localStorage.removeItem("token");
     navigate("/signin");
