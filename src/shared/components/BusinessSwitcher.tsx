@@ -13,7 +13,7 @@ export function BusinessSwitcher() {
   const match = useMatch("/:businessId/*");
   const businessId = match?.params.businessId;
 
-  const { data: businesses } = useBusinesses({});
+  const { data: businesses } = useBusinesses();
 
   const activeBusiness = businesses?.find(
     (b) => b.id.toString() === businessId,

@@ -6,7 +6,7 @@ interface IUseBusinessesProps {
   enabled?: boolean;
 }
 
-export const useBusinesses = ({ enabled }: IUseBusinessesProps) =>
+export const useBusinesses = ({ enabled }: IUseBusinessesProps = {}) =>
   useQuery<Business[]>({
     queryKey: ["businesses"],
     queryFn: async () => {
