@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../shared/api/api";
 import { Spinner } from "@/shared/ui/spinner";
+import { sessionModel } from "@/entities/session";
 
 interface User {
   username: string;
@@ -26,7 +27,7 @@ export default function DashboardPage() {
 
   if (isLoading) return <Spinner />;
   if (error) {
-    localStorage.removeItem("token");
+    sessionModel.clearToken();
     navigate("/signin");
     return null;
   }
@@ -37,7 +38,7 @@ export default function DashboardPage() {
       <p>Welcome, {user?.username}!</p>
       <button
         onClick={() => {
-          localStorage.removeItem("token");
+          sessionModel.clearToken();
           navigate("/signin");
         }}
       >

@@ -5,6 +5,7 @@ import api from "../../shared/api/api";
 import { Button } from "@/shared/ui/button";
 import { useTranslation } from "react-i18next";
 import { Spinner } from "@/shared/ui/spinner";
+import { sessionModel } from "@/entities/session";
 
 export default function LandingPage() {
   const navigate = useNavigate();
@@ -17,11 +18,11 @@ export default function LandingPage() {
       const response = await api.get("/onboarding/setup-business");
       return response.data;
     },
-    enabled: !!localStorage.getItem("token"),
+    enabled: sessionModel.isAuthenticated(),
   });
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = sessionModel.getToken();
     if (!token) {
       navigate("/signin");
     }

@@ -10,14 +10,6 @@ export function Sidebar() {
       <ul className="space-y-0.5">
         <li>
           <Link
-            to={`/${businessId}/business`}
-            className="text-xs hover:underline"
-          >
-            {t("sidebar.business")}
-          </Link>
-        </li>
-        <li>
-          <Link
             to={`/${businessId}/deliveries`}
             className="text-xs hover:underline"
           >

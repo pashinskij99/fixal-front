@@ -1,15 +1,18 @@
+import { sessionModel } from "@/entities/session";
+import { SignInForm } from "@/features/sign-in";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SignInForm from "./SignInForm";
 
-export default function SignInPage() {
+const SignInPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
+    if (sessionModel.isAuthenticated()) {
       navigate("/");
     }
   }, [navigate]);
 
   return <SignInForm />;
-}
+};
+
+export default SignInPage;

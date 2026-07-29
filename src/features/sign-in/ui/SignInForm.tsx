@@ -1,25 +1,19 @@
-import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import api from "../../shared/api/api";
-import { signInSchema, type SignInFormValues } from "./signin.schema";
+import { signInSchema, type SignInFormValues } from "../model/signin.schema";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import FormContainer from "@/shared/components/FormContainer";
 import axios from "axios";
-
-interface AlertState {
-  type: "success" | "danger";
-  message: string;
-}
+import { sessionModel } from "@/entities/session";
+import { useSignIn } from "../api/useSignIn";
 
 export default function SignInForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState<AlertState | null>(null);
   const navigate = useNavigate();
+  const { mutate, isPending, error } = useSignIn();
 
   const {
     register,
@@ -30,25 +24,21 @@ export default function SignInForm() {
   });
 
   const onSubmit = async (data: SignInFormValues) => {
-    setAlert(null);
-    setIsLoading(true);
-
     try {
-      const response = await api.post("/users/login", data);
-      localStorage.setItem("token", response.data.access_token);
-      navigate("/");
+      mutate(data, {
+        onSuccess: (data) => {
+          sessionModel.setToken(data.access_token);
+          navigate("/");
+        },
+      });
     } catch (err) {
-      const errorMessage = "Something went wrong";
-      if (axios.isAxiosError(err)) {
-        setAlert({
-          type: "danger",
-          message: err.response?.data?.message || errorMessage,
-        });
-      }
-    } finally {
-      setIsLoading(false);
+      console.error(err);
     }
   };
+
+  const errorMessage = axios.isAxiosError(error)
+    ? error.response?.data?.message || "Something went wrong"
+    : null;
 
   return (
     <FormContainer>
@@ -59,12 +49,9 @@ export default function SignInForm() {
         </p>
       </div>
 
-      {alert && (
-        <Alert
-          variant={alert.type === "danger" ? "destructive" : "default"}
-          className="mb-6"
-        >
-          <AlertDescription>{alert.message}</AlertDescription>
+      {errorMessage && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
 
@@ -81,7 +68,7 @@ export default function SignInForm() {
             type="email"
             placeholder="john@example.com"
             {...register("email")}
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full rounded-lg border border-border bg-background px-3.5 py-2.75 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10 disabled:opacity-50"
           />
           {errors.email && (
@@ -101,7 +88,7 @@ export default function SignInForm() {
             type="password"
             placeholder="••••••••"
             {...register("password")}
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full rounded-lg border border-border bg-background px-3.5 py-2.75 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10 disabled:opacity-50"
           />
           {errors.password && (
@@ -111,8 +98,8 @@ export default function SignInForm() {
           )}
         </div>
 
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          {isLoading ? "Processing..." : "Sign In"}
+        <Button className="w-full" type="submit" disabled={isPending}>
+          {isPending ? "Processing..." : "Sign In"}
         </Button>
       </form>
 
