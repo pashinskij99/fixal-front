@@ -218,12 +218,14 @@ export default function DeliveriesPage() {
               ))}
             </TableBody>
           </Table>
-          <AppPagination
-            currentPage={page}
-            totalCount={deliveries?.totalCount || 0}
-            limit={10}
-            onPageChange={handlePageChange}
-          />
+          {deliveries?.totalCount ? (
+            <AppPagination
+              currentPage={page}
+              totalCount={deliveries?.totalCount || 0}
+              limit={10}
+              onPageChange={handlePageChange}
+            />
+          ) : null}
         </>
       ) : (
         businessId && <p className="text-sm">{t("deliveries.list.empty")}</p>

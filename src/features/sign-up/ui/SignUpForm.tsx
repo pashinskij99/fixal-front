@@ -1,25 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
-import api from "../../shared/api/api";
-import { signUpSchema, type SignUpFormValues } from "./signup.schema";
+
+import { Alert, AlertDescription } from "@/shared/ui/alert";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
-import { Alert, AlertDescription } from "@/shared/ui/alert";
 import FormContainer from "@/shared/components/FormContainer";
-import axios from "axios";
 
-interface AlertState {
-  type: "success" | "danger";
-  message: string;
-}
+import { useSignUp, getErrorMessage } from "../api/useSignUp";
+import { signUpSchema, type SignUpFormValues } from "../model/signup.schema";
 
 export default function SignUpForm() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState<AlertState | null>(null);
-  const navigate = useNavigate();
+  const { mutate, isPending, isSuccess, isError, error } = useSignUp();
 
   const {
     register,
@@ -29,28 +22,8 @@ export default function SignUpForm() {
     resolver: zodResolver(signUpSchema),
   });
 
-  const onSubmit = async (data: SignUpFormValues) => {
-    setAlert(null);
-    setIsLoading(true);
-
-    try {
-      await api.post("/users/register", data);
-      setAlert({
-        type: "success",
-        message: "Successfully registered! Redirecting to sign in...",
-      });
-      setTimeout(() => navigate("/signin"), 1500);
-    } catch (err) {
-      const errorMessage = "Something went wrong";
-      if (axios.isAxiosError(err)) {
-        setAlert({
-          type: "danger",
-          message: err.response?.data?.message || errorMessage,
-        });
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (data: SignUpFormValues) => {
+    mutate(data);
   };
 
   return (
@@ -64,12 +37,17 @@ export default function SignUpForm() {
         </p>
       </div>
 
-      {alert && (
-        <Alert
-          variant={alert.type === "danger" ? "destructive" : "default"}
-          className="mb-6"
-        >
-          <AlertDescription>{alert.message}</AlertDescription>
+      {isSuccess && (
+        <Alert className="mb-6 border-emerald-500 text-emerald-600">
+          <AlertDescription>
+            Successfully registered! Redirecting to sign in...
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {isError && (
+        <Alert variant="destructive" className="mb-6">
+          <AlertDescription>{getErrorMessage(error)}</AlertDescription>
         </Alert>
       )}
 
@@ -85,9 +63,8 @@ export default function SignUpForm() {
             id="email"
             type="email"
             placeholder="john@example.com"
+            disabled={isPending}
             {...register("email")}
-            disabled={isLoading}
-            className="w-full rounded-lg border border-border bg-background px-3.5 py-2.75 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10 disabled:opacity-50"
           />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -104,9 +81,8 @@ export default function SignUpForm() {
           <Input
             id="phone"
             placeholder="+1234567890"
+            disabled={isPending}
             {...register("phone")}
-            disabled={isLoading}
-            className="w-full rounded-lg border border-border bg-background px-3.5 py-2.75 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10 disabled:opacity-50"
           />
           {errors.phone && (
             <p className="text-sm text-destructive">{errors.phone.message}</p>
@@ -124,9 +100,8 @@ export default function SignUpForm() {
             id="password"
             type="password"
             placeholder="••••••••"
+            disabled={isPending}
             {...register("password")}
-            disabled={isLoading}
-            className="w-full rounded-lg border border-border bg-background px-3.5 py-2.75 text-sm text-foreground transition-colors focus:border-primary focus:outline-none focus:ring-3 focus:ring-primary/10 disabled:opacity-50"
           />
           {errors.password && (
             <p className="text-sm text-destructive">
@@ -135,19 +110,19 @@ export default function SignUpForm() {
           )}
         </div>
 
-        <Button className="w-full" type="submit" disabled={isLoading}>
-          {isLoading ? "Processing..." : "Sign Up"}
+        <Button className="w-full" type="submit" disabled={isPending}>
+          {isPending ? "Processing..." : "Sign Up"}
         </Button>
       </form>
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
         Already have an account?
-        <a
-          href="/signin"
+        <Link
+          to="/signin"
           className="ml-1 font-semibold text-primary underline transition-opacity hover:opacity-80"
         >
           Sign in
-        </a>
+        </Link>
       </div>
     </FormContainer>
   );

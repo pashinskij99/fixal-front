@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema, type SignInFormValues } from "../model/signin.schema";
@@ -8,11 +8,9 @@ import { Label } from "@/shared/ui/label";
 import { Alert, AlertDescription } from "@/shared/ui/alert";
 import FormContainer from "@/shared/components/FormContainer";
 import axios from "axios";
-import { sessionModel } from "@/entities/session";
 import { useSignIn } from "../api/useSignIn";
 
 export default function SignInForm() {
-  const navigate = useNavigate();
   const { mutate, isPending, error } = useSignIn();
 
   const {
@@ -23,17 +21,8 @@ export default function SignInForm() {
     resolver: zodResolver(signInSchema),
   });
 
-  const onSubmit = async (data: SignInFormValues) => {
-    try {
-      mutate(data, {
-        onSuccess: (data) => {
-          sessionModel.setToken(data.access_token);
-          navigate("/");
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
+  const onSubmit = (data: SignInFormValues) => {
+    mutate(data);
   };
 
   const errorMessage = axios.isAxiosError(error)
@@ -105,12 +94,12 @@ export default function SignInForm() {
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
         Don't have an account?
-        <a
-          href="/signup"
+        <Link
+          to="/signup"
           className="ml-1 font-semibold text-primary underline transition-opacity hover:opacity-80"
         >
           Sign up
-        </a>
+        </Link>
       </div>
     </FormContainer>
   );

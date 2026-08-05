@@ -13,7 +13,7 @@ export function BusinessSwitcher() {
   const match = useMatch("/:businessId/*");
   const businessId = match?.params.businessId;
 
-  const { data: businesses } = useBusinesses();
+  const { data: businesses, isLoading } = useBusinesses();
 
   const activeBusiness = businesses?.find(
     (b) => b.id.toString() === businessId,
@@ -23,22 +23,17 @@ export function BusinessSwitcher() {
     navigate(`/${value}/dashboard`);
   };
 
-  console.log({ businessId });
+  const selectValue = activeBusiness ? businessId! : "";
 
   return (
     <Select
       key={businessId}
       onValueChange={handleBusinessChange}
-      value={businessId || ""}
+      value={selectValue}
+      disabled={isLoading}
     >
       <SelectTrigger className="w-[160px] h-8 text-xs">
-        <SelectValue
-          placeholder={
-            activeBusiness
-              ? activeBusiness.publicName || activeBusiness.legalName
-              : "Select business"
-          }
-        />
+        <SelectValue placeholder="Select business" />
       </SelectTrigger>
       <SelectContent>
         {businesses?.map((b) => (

@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-export function Sidebar() {
+const Sidebar = () => {
   const { businessId } = useParams();
   const { t } = useTranslation();
 
@@ -27,4 +27,6 @@ export function Sidebar() {
       </ul>
     </aside>
   );
-}
+};
+
+export default Sidebar;

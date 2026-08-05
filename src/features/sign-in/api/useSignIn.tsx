@@ -1,11 +1,13 @@
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-import type { SignInFormValues } from "../model/signin.schema";
-import { useMutation } from "@tanstack/react-query";
 import api from "@/shared/api/api";
-import { sessionModel } from "@/entities/session";
+import { useSessionStore } from "@/entities/session";
+import type { SignInFormValues } from "../model/signin.schema";
 
 export function useSignIn() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const setUser = useSessionStore((state) => state.setUser);
 
   return useMutation({
     mutationFn: async (data: SignInFormValues) => {
@@ -13,8 +15,11 @@ export function useSignIn() {
       return response.data;
     },
     onSuccess: (data) => {
-      sessionModel.setToken(data.access_token);
-      navigate("/");
+      setUser(data.user);
+
+      queryClient.setQueryData(["session", "me"], data.user);
+
+      navigate("/business");
     },
   });
 }
